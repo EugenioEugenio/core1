@@ -1,2 +1,4 @@
-Django == 6.0.1
+Django == 6.0.2
 djangorestframework
+openai 
+django-cors-headers

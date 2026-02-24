@@ -21,7 +21,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}:latest -f django-backend/Dockerfile django-backend
+        run: docker build -t ghcr.io/${{ github.repository }}:latest -f core/Dockerfile core
 
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository }}:latest
@@ -41,5 +41,4 @@ jobs:
       - name: Logout from GitHub Container Registry
         if: always()
         run: docker logout ghcr.io
-@EugenioEugenio
-Comment
+

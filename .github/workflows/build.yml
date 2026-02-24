@@ -20,9 +20,9 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image cd core && docker build -t ghcr.io/eugenioeugenio/core1:latest .   
-      #  run: docker build -t ghcr.io/${{ github.repository }}:latest .# -f core/Dockerfile .
-        run: docker build -t ghcr.io/eugenioeugenio/core1:latest -f core/Dockerfile .
+      - name: Build Docker image    
+      #  run: docker build -t ghcr.io/${{ github.repository }}:latest -f core/Dockerfile . 
+        run: docker build -t ghcr.io/eugenioeugenio/core1:latest 
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository }}:latest
 

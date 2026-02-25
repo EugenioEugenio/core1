@@ -5,7 +5,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-#COPY run.sh .
+COPY run.sh .
 EXPOSE 8000
 #CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 CMD ["sh", "run.sh"]

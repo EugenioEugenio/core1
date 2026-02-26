@@ -2,8 +2,8 @@
 services:
   # Создаем сервис с названием - app
   app:
-    image: ghcr.io/eugenioeugenio/core1:latest
-  #  image: django_build
+   # image: ghcr.io/eugenioeugenio/core1:latest
+    image: django_build
     # Даем понятное имя контейнеру -  django_...
     container_name: django_container
 
@@ -21,8 +21,8 @@ services:
 
 
     # Синхронизируем папки: связываем текущую папку на компьютере с папкой /app в контейнере
-    volumes:
-      - .:/app
+    #volumes:
+    #  - .:/app
 
     # Указываем рабочую папку внутри контейнера (где лежит наш код)
     working_dir: /app

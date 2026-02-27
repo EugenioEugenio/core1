@@ -21,23 +21,23 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image    
-      #  run: docker build -t ghcr.io/${{ github.repository }}:latest -f core/Dockerfile . 
+      # run: docker build -t ghcr.io/${{ github.repository }}:latest -f core/Dockerfile . 
         run: docker build -t ghcr.io/eugenioeugenio/core1:latest .
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository }}:latest
 
-       - name: Deploy to VPS
-         uses: appleboy/ssh-action@master
-         with:
-           host: ${{ secrets.SSH_HOST }}
-           username: ${{ secrets.SSH_USER }}
-           key: ${{ secrets.SSH_PRIVATE_KEY }}
-           script: |
-             echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-             docker pull ghcr.io/${{ github.repository }}:latest
-             cd /home/cerdo/django
-             docker compose down && docker compose up -d
-             docker logout ghcr.io
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker pull ghcr.io/${{ github.repository }}:latest
+            cd /home/cerdo/django
+            docker compose down && docker compose up -d
+            docker logout ghcr.io
       - name: Logout from GitHub Container Registry
         if: always()
         run: docker logout ghcr.io

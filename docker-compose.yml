@@ -1,78 +1,75 @@
 #docker-compose up --build
+#services:
+#  app:
+#   # image: ghcr.io/eugenioeugenio/core1:latest
+#    image: django_build
+#
+#    container_name: django_container
+#
+#    build:
+#      context: .  # указываем путь где лежит этот Dockerfile. У меня в корне.
+#      dockerfile: Dockerfile  # Используем инструкции из файла Dockerfile
+#
+#    working_dir: /app
+#
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      app-postgres:
+#        condition: service_healthy # Ждем именно готовности БД ( Ждем, пока запустится база)
+## ---------------------------------------------------------------------------
+#  app-postgres:
+#    image: postgres:15-alpine
+#    ports:
+#    - "5432:5432"
+#    volumes:
+#    - "app-postgres:/var/lib/postgresql/data" # Данные не удалятся при перезапуске
+#    environment:
+#    - POSTGRES_DB=django_db
+#    - POSTGRES_USER=django_user
+#    - POSTGRES_PASSWORD=django_pass
+#
+#    healthcheck:
+#        test: [ "CMD-SHELL", "pg_isready -U django_user -d django_db" ]
+#        interval: 5s
+#        timeout: 5s
+#        retries: 5
+#
+#volumes:
+#  app-postgres:
+#    name: "app-postgres"
+
+
+
 services:
-  # Создаем сервис с названием - app
-  app:
-   # image: ghcr.io/eugenioeugenio/core1:latest
-    image: django_build
-    # Даем понятное имя контейнеру -  django_...
-    container_name: django_container
+  app-postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: django_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U django_user -d django_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
 
-    # Собираем образ из Dockerfile. Выше мы уже выполняли эту команду)
-    build:
-      context: .  # указываем путь где лежит этот Dockerfile. У меня в корне.
-      dockerfile: Dockerfile  # Используем инструкции из файла Dockerfile
-      # Иногда названия могут быть другие, например Dockerfile.prod - для продакшена
+  django:
+    image: ghcr.io/eugenioeugenio/core1:latest
 
-    # запускаем наш проект, как все собрали
-    #command: python manage.py runserver 0.0.0.0:8000
-    #command: >
-    #  sh -c "python manage.py migrate &&
-    #         python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=123
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
 
-
-    # Синхронизируем папки: связываем текущую папку на компьютере с папкой /app в контейнере
-    #volumes:
-    #  - .:/app
-
-    # Указываем рабочую папку внутри контейнера (где лежит наш код)
     working_dir: /app
-
-
+ #   command: >
+ #     sh -c "sed -i 's/\r//' run.sh && sh run.sh"
+ #   command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     depends_on:
       app-postgres:
-        condition: service_healthy # Ждем именно готовности БД ( Ждем, пока запустится база)
-# ---------------------------------------------------------------------------
-  app-postgres:
-    image: postgres:15-alpine
-    ports:
-    - "5432:5432"
-    volumes:
-    - "app-postgres:/var/lib/postgresql/data" # Данные не удалятся при перезапуске
-    environment:
-    - POSTGRES_DB=django_db
-    - POSTGRES_USER=django_user
-    - POSTGRES_PASSWORD=django_pass
-
-    healthcheck:
-        test: [ "CMD-SHELL", "pg_isready -U django_user -d django_db" ]
-        interval: 5s
-        timeout: 5s
-        retries: 5
-
-volumes:
-  app-postgres:
-    name: "app-postgres"
-
-
-#  db:
-#    image: postgres:15-alpine
-#    container_name: postgres_db
-#    environment:
-#      - POSTGRES_DB=django_db
-#      - POSTGRES_USER=django_user
-#      - POSTGRES_PASSWORD=django_pass
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data # Данные не удалятся при перезапуске
-
-#  #app:
-#    build: .
-#    container_name: django_container
-#    command: python manage.py runserver 0.0.0.0:8000
-#    volumes:
-#      - .:/app
-#    working_dir: /app
-
-#volumes:
-#  postgres_data:
+        condition: service_healthy

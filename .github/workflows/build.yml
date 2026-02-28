@@ -1,5 +1,6 @@
 # .github/workflows/build.yml
 name: Simple Docker Build and Push
+run-name: Deploy by @${{ github.actor }}
 
 on:
   push:

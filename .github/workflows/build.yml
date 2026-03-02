@@ -52,7 +52,7 @@ jobs:
           script: |
           # 1. Авторизация и переход в папку
             echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-                  cd /home/cerdo/django
+            cd /home/cerdo/django
 
            # 2. Обновление образа (подтягиваем то, что только что собрал GitHub)
             docker compose pull django

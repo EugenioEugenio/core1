@@ -110,8 +110,8 @@ services:
       - django_static:/app/staticfiles
  # Должно совпадать с STATIC_ROOT
     ports:
-       - "8000"
- #     - "8000:8000"
+     #  - "8000"
+      - "8000:8000"
     depends_on:
       app-postgres:
         condition: service_healthy

@@ -28,6 +28,21 @@ jobs:
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository }}:latest
 
+#      - name: Deploy to VPS
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USER }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          script: |
+#            echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+#            docker pull ghcr.io/${{ github.repository }}:latest
+#            cd /home/cerdo/django
+#            docker compose down && docker compose up -d
+#            docker logout ghcr.io
+            
+            
+
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
@@ -35,11 +50,23 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker pull ghcr.io/${{ github.repository }}:latest
-            cd /home/cerdo/django
-            docker compose down && docker compose up -d
-            docker logout ghcr.io
+                  # 1. Авторизация и переход в папку
+              echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                  cd /home/cerdo/django
+
+                  # 2. Обновление образа (подтягиваем то, что только что собрал GitHub)
+              docker compose pull django
+
+                  # 3. Перезапуск БЕЗ полной остановки (сайт почти не "моргнет")
+              docker compose up -d --force-recreate
+
+                  # 4. АВТО-МИГРАЦИИ (обязательно для новых фич)
+              docker compose exec -T django python manage.py migrate --noinput
+
+                  # 5. Очистка старых образов (чтобы диск на VPS не забился)
+              docker image prune -f
+              docker logout ghcr.io
+
       - name: Logout from GitHub Container Registry
         if: always()
         run: docker logout ghcr.io

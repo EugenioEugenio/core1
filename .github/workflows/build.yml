@@ -40,9 +40,6 @@ jobs:
 #            cd /home/cerdo/django
 #            docker compose down && docker compose up -d
 #            docker logout ghcr.io
-            
-            
-
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
